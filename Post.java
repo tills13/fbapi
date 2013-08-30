@@ -24,6 +24,16 @@ public class Post {
 		this.comments = getCommentsFromServer();
 	}
 
+	public Post(String id, String message, String link, Profile from, String groupid) {
+		this.id = id;
+		this.message = message;
+		this.link = link;
+		this.from = from;
+		this.group = FacebookAPI.getGroup(groupid);
+		this.genre = parseGenre();
+		this.comments = getCommentsFromServer();
+	}
+
 	public String moToEnglish() {
 		return "idiot";
 	}
@@ -49,6 +59,10 @@ public class Post {
 
 	public List<Comment> getComments() {
 		return this.comments;
+	}
+
+	public Group getParent() {
+		return this.group;
 	}
 
 	public String getFullURL() {

@@ -6,6 +6,8 @@ public class Group {
 	public String description;
 	public String link;
 	public String privacy;
+	public String email;
+	public Profile owner;
 	public List<Post> posts;
 	public List<Profile> members;
 
@@ -13,11 +15,13 @@ public class Group {
 		this.id = id;
 	}
 
-	public Group(String id, String name, String description, String link) {
+	public Group(String id, String name, String description, String privacy, String email, Profile owner) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
-		this.link = link;
+		this. privacy = privacy;
+		this.email = email;
+		this.owner = owner;
 	}
 
 	public String getId() {
@@ -34,5 +38,13 @@ public class Group {
 
 	public String getFullURL() {
 		return this.id;
+	}
+
+	public String getDescription() {
+		return this.description;
+	}
+
+	public String toString() {
+		return this.name + ": " + this.description;
 	}
 }

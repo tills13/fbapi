@@ -44,6 +44,36 @@ public class FacebookAPI {
 		return getPosts(group);
 	}
 
+	public static Post getPost(String postid) {
+		JSONObject response = getServerResponse(base_url + postid);
+
+		String id = response.has("id") ? (String)response.get("id") : "";
+		String groupid = id.substring(0, id.indexOf("_"));
+		id = id.substring(id.indexOf("_") + 1, id.length());
+		String message = response.has("message") ? response.get("message").toString() : "";
+		String link = response.has("link") ? (String)response.get("link") : "";
+
+		JSONObject fromJson = (JSONObject)response.get("from");
+		Profile from = new Profile((String)fromJson.get("name"), (String)fromJson.get("id"));
+		
+		return new Post(id, message, link, from, groupid);
+	}
+
+	public static Group getGroup(String groupid) {
+		JSONObject response = getServerResponse(base_url + groupid);
+
+		String id = response.has("id") ? response.getString("id") : "";
+		String name = response.has("name") ? response.get("name").toString() : "";
+		String description = response.has("description") ? response.getString("description") : "";
+		String privacy = response.getString("privacy");
+		String email = response.getString("email");
+
+		JSONObject ownerJson = response.getJSONObject("owner");
+		Profile owner = new Profile(ownerJson.getString("name"), ownerJson.getString("id"));
+		
+		return new Group(id, name, description, privacy, email, owner);
+	}
+
 	public static List<Profile> getMembers(Group group) {
 		List<Profile> list = new ArrayList<Profile>();
 		JSONArray members = (JSONArray)getServerResponse(base_url + group.getId() + members_url).get("data");
@@ -58,6 +88,18 @@ public class FacebookAPI {
 		}
 
 		return list;
+	}
+
+	public static Profile getProfile(String profileid) {
+		JSONObject response = getServerResponse(base_url + profileid);
+
+		String id = response.getString("id");
+		String first_name = response.getString("first_name");
+		String last_name = response.getString("last_name");
+		String gender = response.getString("gender");
+		String username = response.getString("username");
+
+		return new Profile(id, first_name, last_name, gender, username);
 	}
 
 	public static List<Event> getEvents(Group group) {
@@ -84,6 +126,24 @@ public class FacebookAPI {
 		return list;
 	}
 
+	public static Event getEvent(String eventid) {
+		JSONObject response = getServerResponse(base_url + eventid);
+
+		String id = response.getString("id");
+		String name = response.getString("name");
+		String time_zome = response.getString("timezone");
+		String start_time = response.getString("start_time");
+		String end_time = response.getString("end_time");
+		//String location = response.getString("location");
+		Location location = new Location();
+
+		Event tempEvent = new Event(id, name, location.toString());
+		tempEvent.setTimezone(time_zome);
+		tempEvent.setStartAndEndTime(start_time, end_time);
+
+		return tempEvent;
+	}
+
 	public static List<Document> getDocs(Group group) {
 		List<Document> list = new ArrayList<Document>();
 		JSONArray docs = (JSONArray)getServerResponse(base_url + group.getId() + docs_url).get("data");
@@ -100,12 +160,25 @@ public class FacebookAPI {
 			
 			boolean canEdit = doc.has("can_edit") ? doc.getBoolean("can_edit") : false;
 
-			
-			
 			list.add(new Document(subject, id, content, author, canEdit));
 		}
 
 		return list;
+	}
+
+	public static Comment getComment(String commentid) {
+		JSONObject response = getServerResponse(base_url + commentid);
+
+		String id = response.getString("id");
+		String postid = id.substring(0, id.lastIndexOf("_"));
+		id = id.substring(id.lastIndexOf("_") + 1, id.length());
+		String message = response.getString("message");
+		int likes = response.getInt("like_count");
+
+		JSONObject authorJson = response.getJSONObject("from");
+		Profile author = new Profile(authorJson.getString("name"), authorJson.getString("id"));
+
+		return new Comment(id, author, postid, message, likes);
 	}
 
 	public static boolean likeEntity(Object obj) {
@@ -113,6 +186,7 @@ public class FacebookAPI {
 		try {
 			if (obj instanceof Post) url = ((Post)obj).getFullURL();
 			else if (obj instanceof Comment) url = ((Comment)obj).getFullURL();
+			else if (obj instanceof Document) url = ((Document)obj).getFullURL();
 			else return false;
 
 			URL urlCon = new URL(base_url + url + likes_url + "?access_token=" + access_token);

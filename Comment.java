@@ -1,14 +1,22 @@
 public class Comment {
 	public String id; 
 	public Post post;
-	public Profile owner;
+	public Profile author;
 	public String message;	
 	public int likes;
 
-	public Comment(String id, Profile owner, Post post, String message, int likes) {
+	public Comment(String id, Profile author, Post post, String message, int likes) {
 		this.id = id;
-		this.owner = owner;
+		this.author = author;
 		this.post = post;
+		this.message = message;
+		this.likes = likes;
+	}
+
+	public Comment(String id, Profile author, String postid, String message, int likes) {
+		this.id = id;
+		this.author = author;
+		this.post = FacebookAPI.getPost(postid);
 		this.message = message;
 		this.likes = likes;
 	}
@@ -25,11 +33,15 @@ public class Comment {
 		this.message = newMessage;
 	}
 
+	public Post getParent() {
+		return this.post;
+	}
+
 	public String getFullURL() {
 		return this.post.getFullURL() + "_" + this.id;
 	}
 
 	public String toString() {
-		return this.owner.getName() + ": " + this.message;
+		return this.author.getFullName() + ": " + this.message;
 	}
 }

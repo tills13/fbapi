@@ -1,12 +1,25 @@
 public class Profile {
-	public String name; 
+	public String first_name; 
+	public String last_name;
 	public String id;
 	public boolean isAdmin;
+	public String gender;
+	public String username;
 
 	public Profile(String name, String id) {
-		this.name = name;
+		//this.name = name;
+		this.first_name = name.substring(0, name.indexOf(" "));
+		this.last_name = name.substring(name.indexOf(" ") + 1, name.length());
 		this.id = id;
 		this.isAdmin = false;
+	}
+
+	public Profile(String id, String first_name, String last_name, String gender, String username) {
+		this.id = id;
+		this.first_name = first_name;
+		this.last_name = last_name;
+		this.gender = gender;
+		this.username = username;
 	}
 
 	public Profile(String name, String id, boolean isAdmin) {
@@ -14,8 +27,16 @@ public class Profile {
 		this.isAdmin = isAdmin;
 	}
 
-	public String getName() {
-		return this.name;
+	public String getFirstName() {
+		return this.first_name;
+	}
+
+	public String getLastName() {
+		return this.last_name;
+	}
+
+	public String getFullName() {
+		return this.first_name + " " + this.last_name;
 	}
 
 	public String getProfile() {
@@ -23,6 +44,6 @@ public class Profile {
 	}
 
 	public String toString() {
-		return this.name + " " + this.id + " " + this.isAdmin;
+		return getFullName() + " " + this.id + " " + this.isAdmin;
 	}
 }
