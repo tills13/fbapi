@@ -1,7 +1,8 @@
 import java.util.List;
 
 public class Group {
-	public String id; 
+	public String id;
+	public Object parent;
 	public String name;
 	public String description;
 	public String link;
@@ -15,8 +16,9 @@ public class Group {
 		this.id = id;
 	}
 
-	public Group(String id, String name, String description, String privacy, String email, Profile owner) {
+	public Group(String id, String name, String description, String privacy, String email, Profile owner, Object parent) {
 		this.id = id;
+		this.parent = 
 		this.name = name;
 		this.description = description;
 		this. privacy = privacy;
@@ -36,7 +38,7 @@ public class Group {
 		return FacebookAPI.getMembers(this);
 	}
 
-	public String getFullURL() {
+	public String getFullId() {
 		return this.id;
 	}
 

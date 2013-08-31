@@ -1,22 +1,15 @@
-public class Comment {
-	public String id; 
-	public Post post;
+public class Comment { 
+	public String id;
+	public Object parent;
 	public Profile author;
 	public String message;	
 	public int likes;
 
-	public Comment(String id, Profile author, Post post, String message, int likes) {
+	public Comment(String id, Profile author, Object parent, String message, int likes) {
 		this.id = id;
+		this.parent = parent;
 		this.author = author;
-		this.post = post;
-		this.message = message;
-		this.likes = likes;
-	}
-
-	public Comment(String id, Profile author, String postid, String message, int likes) {
-		this.id = id;
-		this.author = author;
-		this.post = FacebookAPI.getPost(postid);
+		this.parent = parent;
 		this.message = message;
 		this.likes = likes;
 	}
@@ -33,12 +26,11 @@ public class Comment {
 		this.message = newMessage;
 	}
 
-	public Post getParent() {
-		return this.post;
-	}
-
-	public String getFullURL() {
-		return this.post.getFullURL() + "_" + this.id;
+	public String getFullId() {
+		if (this.parent instanceof Post) return ((Post)this.parent).getFullId() + "_" + this.id;
+		else if (this.parent instanceof Link) return ((Link)this.parent).getFullId() + "_" + this.id;
+		else if (this.parent instanceof Status) return ((Status)this.parent).getFullId() + "_" + this.id;
+		return this.id;
 	}
 
 	public String toString() {

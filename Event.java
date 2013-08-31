@@ -1,15 +1,19 @@
 import java.util.*;
 
-public class Event {
-	public String id; 
+public class Event { 
+	public String id;
+	public Object parent;
 	public String name;
 	public String time_zone;
 	public String start_time;
 	public String end_time;
 	public String location;
+	public List<Profile> invited;
+	public List<Profile> attending;
 
-	public Event(String id, String name, String location) {
+	public Event(String id, String name, String location, Object parent) {
 		this.id = id;
+		this.parent = parent;
 		this.name = name;
 		this.location = location;
 	}
@@ -25,7 +29,7 @@ public class Event {
 
 	public List<Profile> getAttending() {
 		List<Profile> list = new ArrayList<Profile>();
-		JSONObject response = FacebookAPI.getServerResponse(getFullURL() + "/attending");
+		JSONObject response = FacebookAPI.getServerResponse(getFullId() + "/attending");
 
 		JSONArray attending = response.getJSONArray("data");
 
@@ -43,7 +47,7 @@ public class Event {
 
 	public Map<Profile, String> getInvited() {
 		Map<Profile, String> map = new HashMap<Profile, String>();
-		JSONObject response = FacebookAPI.getServerResponse(getFullURL() + "/invited");
+		JSONObject response = FacebookAPI.getServerResponse(getFullId() + "/invited");
 
 		JSONArray invited = response.getJSONArray("data");
 
@@ -60,7 +64,7 @@ public class Event {
 		return map;
 	}
 
-	public String getFullURL() {
+	public String getFullId() {
 		return FacebookAPI.base_url + this.id; 
 	}
 }
