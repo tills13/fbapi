@@ -211,18 +211,18 @@ public class FacebookAPI {
 	// Posting
 	// ------------------------
 
-	/*public static boolean post(Object target, String message) {
+	public static boolean post(Postable target, String message, String link) {
+		String response = "";
+
 		try {
-			URL url = new URL(base_url + feed_url + "?access_token=" + access_token);
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setInstanceFollowRedirects(true); 
-			con.setRequestProperty("message", "test");
-			//con.setRequestProperty("link", "http://www.google.com");
+			HttpURLConnection con = (HttpURLConnection) new URL(base_url + feed_url + "?access_token=" + access_token).openConnection();
 			con.setRequestMethod("POST");
+			con.setDoOutput(true);
+			con.setInstanceFollowRedirects(true); 
+			con.setRequestProperty("message", message);
+			if (!link.equals("")) con.setRequestProperty("link", link);
 
-			System.out.println(con.getRequestProperties());
-
-			System.out.println(con.getResponseMessage());
+			response = con.getResponseMessage();
 
 			con.disconnect();
 		} catch (MalformedURLException e) {
@@ -231,20 +231,18 @@ public class FacebookAPI {
 			System.out.println("io: " + e.getMessage());
 		}
 
-		return true;
+		return reponse.equals("OK");
 	}
 
-	public static boolean postComment(Object target, String comment) {
+	public static boolean postComment(Commentable target, String comment) {
 		String response = "";
 
-		try {
-			String params = "?access_token=" + access_token;
-			URL url = new URL(base_url + post.getFullURL() + "/comments" + params);
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		try { 
+			HttpURLConnection con = (HttpURLConnection) new URL(base_url + post.getFullURL() + "/comments" + "?access_token=" + access_token).openConnection();
+			con.setRequestMethod("POST");
 			con.setDoOutput(true); 
 			con.setInstanceFollowRedirects(false); 
 			con.setRequestProperty("message", comment);
-			con.setRequestMethod("POST");
 
 			response = con.getResponseMessage();
 
@@ -256,7 +254,7 @@ public class FacebookAPI {
 		}
 
 		return response.equals("OK");
-	}*/
+	}
 
 	// ------------------------
 	// Groups

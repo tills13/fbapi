@@ -8,7 +8,7 @@ import com.jseb.fbapi.base.*;
 public class Feed implements Idable {
 	public String id;
 	public Profile user;
-	public List<Object> feed_items = new ArrayList<Object>();
+	public List<Idable> feed_items = new ArrayList<Idable>();
 
 	public Feed(Profile user) {
 		this.id = user.getFullId();
@@ -31,41 +31,37 @@ public class Feed implements Idable {
 		else throw new FacebookException("feed item not instance of Link");
 	}
 
-	public Object getFeedItem(int index) {
+	public Idable getFeedItem(int index) {
 		return feed_items.get(index);
 	} 
 
-	public List<Object> getFeedItems() {
+	public List<Idable> getFeed() {
 		refresh();
 		return this.feed_items;
 	}
 
 	public void refresh() {
-		JSONArray feed_json = FacebookAPI.getServerResponse(user.getFullId() + "/home").getJSONArray("data");			
-		Object feed_item = null;
+		JSONArray feed_json = FacebookAPI.getServerResponse(user.getFullId() + FacebookAPI.home_url).getJSONArray("data");			
 
 		for (int i = 0; i < feed_json.length(); i++) {
 			JSONObject feed_item_json = (JSONObject)feed_json.get(i);
 			
-
 			Profile author = FacebookAPI.getAuthor(feed_item_json.getJSONObject("from"));
 			String message = feed_item_json.has("message") ? feed_item_json.getString("message") : "";
 			String id = feed_item_json.getString("id");
 
 			switch(feed_item_json.getString("type")) {
 				case "status": 
-					feed_item = new Status(id, message, author, this);
+					feed_items.add(new Status(id, message, author, this));
 					break;
 				case "link":
 					String link = feed_item_json.getString("link");
-					feed_item = new Link(id, link, message, author, this);
+					feed_items.add(new Link(id, link, message, author, this));
 					break;
 				case "post":
-					feed_item = new Post(id, message, author, this);
+					feed_items.add(new Post(id, message, author, this));
 					break;
 			}
-
-			if (feed_item != null) feed_items.add(feed_item);
 		}
 	}
 

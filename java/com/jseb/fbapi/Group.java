@@ -31,11 +31,11 @@ public class Group implements Idable,Postable {
 	}
 
 	public void post(String message) {
-
+		FacebookAPI.post(message, "");
 	}
 
 	public void post(String message, String link) {
-		
+		FacebookAPI.post(message, link);
 	}
 
 	public List<Post> getPosts() {
@@ -44,6 +44,14 @@ public class Group implements Idable,Postable {
 
 	public List<Profile> getMembers() {
 		return FacebookAPI.getGroupMembers(this);
+	}
+
+	public String getPrivacyType() {
+		return this.privacy;
+	}
+
+	public String getEmail() {
+		return this.email;
 	}
 
 	public String getDescription() {
