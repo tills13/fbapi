@@ -1,4 +1,4 @@
-
+package com.jseb.fbapi.json;
 
 import java.io.BufferedReader;
 import java.io.IOException;

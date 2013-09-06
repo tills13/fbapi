@@ -1,4 +1,8 @@
-public class Document {
+package com.jseb.fbapi;
+
+import com.jseb.fbapi.base.*;
+
+public class Document implements Idable {
 	public String id;
 	public Object parent;
 	public String subject; 
@@ -6,7 +10,7 @@ public class Document {
 	public Profile author;
 	public boolean canEdit;
 
-	public Document(String subject, String id, String content, Profile author, boolean canEdit, Object parent) {
+	public Document(String subject, String id, String content, boolean canEdit, Profile author, Object parent) {
 		this.id = id;
 		this.subject = subject;
 		this.content = content;

@@ -1,11 +1,15 @@
+package com.jseb.fbapi;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Post {
+import com.jseb.fbapi.base.*;
+
+public class Post implements Idable,Commentable {
 	private String id;
 	private Object parent;
-	private Profile from; 
+	private Profile author; 
 	private String message; 
 	private List<Comment> comments;
 	private String createdTime;
@@ -15,12 +19,12 @@ public class Post {
 		this.id = id;
 	}
 
-	public Post(String id, String message, Profile from, Object parent) {
+	public Post(String id, String message, Profile author, Object parent) {
 		this.id = id;
 		this.parent = parent;
 		this.message = message;
-		this.from = from;
-		this.comments = getCommentsFromServer();
+		this.author = author;
+		this.comments = getComments();
 	}
 
 	public String moToEnglish() {
@@ -28,7 +32,11 @@ public class Post {
 	}
 
 	public List<Comment> getComments() {
-		return this.comments;
+		return this.comments == null ? this.comments = FacebookAPI.getComments(this) : this.comments;
+	}
+
+	public List<Profile> getLikes() {
+		return new ArrayList<Profile>();
 	}
 
 	public Object getParent() {
@@ -41,17 +49,7 @@ public class Post {
 		return this.id;
 	}
 
-
-	// NET FUNCTIONS
-	public List<Comment> getCommentsFromServer() {
-		return this.comments == null ? this.comments = FacebookAPI.getComments(this) : this.comments;
-	}
-
-	public ArrayList<Profile> getLikesFromServer() {
-		return new ArrayList<Profile>();	
-	}
-
 	public String toString() {
-		return this.from + " " + this.message;
+		return this.author + " " + this.message;
 	}
 }

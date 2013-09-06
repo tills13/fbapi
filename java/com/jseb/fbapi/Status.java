@@ -1,8 +1,12 @@
+package com.jseb.fbapi;
+
 import java.util.List;
 
-public class Status {
+import com.jseb.fbapi.base.*;
+
+public class Status implements Idable,Commentable {
 	private String id;	
-	private Profile from; 
+	private Profile author; 
 	private String message;
 	private String link; 
 	private List<Comment> comments;
@@ -10,10 +14,10 @@ public class Status {
 	private int likes;
 	private Object parent;
 
-	public Status(String id, Profile from, String message, Object parent) {
+	public Status(String id, String message, Profile author, Object parent) {
 		this.id = id;
 		this.parent = parent;
-		this.from = from;
+		this.author = author;
 		this.message = message;
 		this.comments = FacebookAPI.getComments(this);
 	}
@@ -27,6 +31,6 @@ public class Status {
 	}
 
 	public String toString() {
-		return this.from + ": " + this.message;
+		return this.author + ": " + this.message;
 	}
 }

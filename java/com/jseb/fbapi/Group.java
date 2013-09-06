@@ -1,6 +1,10 @@
+package com.jseb.fbapi;
+
 import java.util.List;
 
-public class Group {
+import com.jseb.fbapi.base.*;
+
+public class Group implements Idable {
 	public String id;
 	public Object parent;
 	public String name;
@@ -31,11 +35,11 @@ public class Group {
 	}
 
 	public List<Post> getPosts() {
-		return FacebookAPI.getPosts(this);
+		return FacebookAPI.getGroupPosts(this);
 	} 
 
 	public List<Profile> getMembers() {
-		return FacebookAPI.getMembers(this);
+		return FacebookAPI.getGroupMembers(this);
 	}
 
 	public String getFullId() {

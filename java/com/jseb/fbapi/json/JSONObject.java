@@ -1,3 +1,5 @@
+package com.jseb.fbapi.json;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;

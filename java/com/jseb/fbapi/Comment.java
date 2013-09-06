@@ -1,11 +1,15 @@
-public class Comment { 
+package com.jseb.fbapi;
+
+import com.jseb.fbapi.base.*;
+
+public class Comment implements Idable { 
 	public String id;
 	public Object parent;
 	public Profile author;
 	public String message;	
 	public int likes;
 
-	public Comment(String id, Profile author, Object parent, String message, int likes) {
+	public Comment(String id, Object parent, String message, Profile author, int likes) {
 		this.id = id;
 		this.parent = parent;
 		this.author = author;

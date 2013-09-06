@@ -1,4 +1,8 @@
-public class Profile {
+package com.jseb.fbapi;
+
+import com.jseb.fbapi.base.*;
+
+public class Profile implements Idable {
 	public String id;
 	public Object parent;
 	public String name;

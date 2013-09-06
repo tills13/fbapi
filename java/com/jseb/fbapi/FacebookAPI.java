@@ -1,8 +1,13 @@
+package com.jseb.fbapi;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.net.*;
 import java.io.*;
+
+import com.jseb.fbapi.json.*;
+import com.jseb.fbapi.base.*;
 
 public class FacebookAPI {
 	private static String access_token;
@@ -19,45 +24,95 @@ public class FacebookAPI {
 		this.access_token = access_token;
 	}
 
-	public static List<Post> getPosts(Group group) {
-		List<Post> list = new ArrayList<Post>();
-		JSONArray posts = (JSONArray)getServerResponse(base_url + group.getId() + feed_url).get("data");
+	// ------------------------
+	// Groups
+	// ------------------------
 
-		for (int i = 0; i < posts.length(); i++) {
-			JSONObject post = (JSONObject) posts.get(i);
+	public static List<Post> getGroupPosts(Group group) {
+		List<Post> posts = new ArrayList<Post>();
+		JSONArray posts_json = (JSONArray) getServerResponse(base_url + group.getId() + feed_url).get("data");
 
-			String id = post.has("id") ? (String)post.get("id") : "";
+		for (int i = 0; i < posts_json.length(); i++) {
+			JSONObject post = (JSONObject) posts_json.get(i);
+
+			String id = post.has("id") ? (String)post.getString("id") : "";
 			id = id.substring(id.indexOf("_") + 1, id.length());
-			String message = post.has("message") ? post.get("message").toString() : "";
-
-			JSONObject fromJson = (JSONObject)post.get("from");
-			Profile from = new Profile((String)fromJson.get("name"), (String)fromJson.get("id"));
+			String message = post.has("message") ? post.getString("message") : "";
+			Profile author = getAuthor(post.getJSONObject("from"));
 			
-			list.add(new Post(id, message, from, group));
+			posts.add(new Post(id, message, author, group));
 		}
 
-		return list;
+		return posts;
 	}
 
-	public static List<Post> getPosts(Group group, String before, String after) {
-		return getPosts(group);
+	public static List<Post> getGroupPosts(Group group, String before, String after) {
+		return getGroupPosts(group);
 	}
 
-	public static List<Profile> getMembers(Group group) {
-		List<Profile> list = new ArrayList<Profile>();
-		JSONArray members = (JSONArray)getServerResponse(base_url + group.getId() + members_url).get("data");
+	public static List<Profile> getGroupMembers(Group group) {
+		List<Profile> members = new ArrayList<Profile>();
+		JSONArray members_json = (JSONArray) getServerResponse(base_url + group.getId() + members_url).get("data");
 
-		for (int i = 0; i < members.length(); i++) {
-			JSONObject member = (JSONObject) members.get(i);
+		for (int i = 0; i < members_json.length(); i++) {
+			JSONObject member = (JSONObject) members_json.get(i);
+
 			String name = member.getString("name");
 			boolean admin = member.getBoolean("administrator");
 			String id = member.getString("id");
 
-			list.add(new Profile(name, id, admin)); 
+			members.add(new Profile(name, id, admin)); 
 		}
 
-		return list;
+		return members;
 	}
+
+	public static List<Event> getGroupEvents(Group group) {
+		List<Event> events = new ArrayList<Event>();
+		JSONArray events_json = (JSONArray) getServerResponse(base_url + group.getId() + events_url).get("data");
+
+		for (int i = 0; i < events_json.length(); i++) {
+			JSONObject event = (JSONObject) events_json.get(i);
+
+			String id = event.getString("id");
+			String name = event.getString("name");
+			String time_zome = event.getString("timezome");
+			String start_time = event.getString("start_time");
+			String end_time = event.getString("end_time");
+			String location = event.getString("location");
+
+			Event tempEvent = new Event(id, name, location, group);
+			tempEvent.setTimezone(time_zome);
+			tempEvent.setStartAndEndTime(start_time, end_time);
+
+			events.add(tempEvent);
+		}
+
+		return events;
+	}
+
+	public static List<Document> getGroupDocs(Group group) {
+		List<Document> docs = new ArrayList<Document>();
+		JSONArray docs_json = (JSONArray) getServerResponse(base_url + group.getId() + docs_url).get("data");
+
+		for (int i = 0; i < docs_json.length(); i++) {
+			JSONObject doc = (JSONObject) docs_json.get(i);
+
+			String subject = doc.has("subject") ? doc.getString("subject") : ""; 
+			String id = doc.has("id") ? doc.getString("id") : "";;
+			String content = doc.has("message") ? doc.getString("message") : "";
+			Profile author = getAuthor(doc.getJSONObject("from"));
+			boolean canEdit = doc.has("can_edit") ? doc.getBoolean("can_edit") : false;
+
+			docs.add(new Document(subject, id, content, canEdit, author, group));
+		}
+
+		return docs;
+	}
+
+	// ------------------------
+	// Profiles
+	// ------------------------
 
 	public static Profile getProfile(String profileid) {
 		JSONObject response = getServerResponse(base_url + profileid);
@@ -71,51 +126,13 @@ public class FacebookAPI {
 		return new Profile(id, first_name, last_name, gender, username);
 	}
 
-	public static List<Event> getEvents(Group group) {
-		List<Event> list = new ArrayList<Event>();
-		JSONArray events = (JSONArray)getServerResponse(base_url + group.getId() + events_url).get("data");
-
-		for (int i = 0; i < events.length(); i++) {
-			JSONObject event = (JSONObject) events.get(i);
-
-			String id = event.getString("id");
-			String name = event.getString("name");
-			String time_zome = event.getString("timezome");
-			String start_time = event.getString("start_time");
-			String end_time = event.getString("end_time");
-			String location = event.getString("location");
-
-			Event tempEvent = new Event(id, name, location, group);
-			tempEvent.setTimezone(time_zome);
-			tempEvent.setStartAndEndTime(start_time, end_time);
-
-			list.add(tempEvent);
-		}
-
-		return list;
+	public static Profile getAuthor(JSONObject profilejson) {
+		return new Profile(profilejson.getString("name"), profilejson.getString("id"));
 	}
 
-	public static List<Document> getDocs(Group group) {
-		List<Document> list = new ArrayList<Document>();
-		JSONArray docs = (JSONArray)getServerResponse(base_url + group.getId() + docs_url).get("data");
-
-		for (int i = 0; i < docs.length(); i++) {
-			JSONObject doc = (JSONObject) docs.get(i);
-
-			String subject = doc.has("subject") ? doc.getString("subject") : ""; 
-			String id = doc.has("id") ? doc.getString("id") : "";;
-			String content = doc.has("message") ? doc.getString("message") : "";
-
-			JSONObject fromJson = (JSONObject)doc.get("from");
-			Profile author = new Profile((String)fromJson.get("name"), (String)fromJson.get("id"));
-			
-			boolean canEdit = doc.has("can_edit") ? doc.getBoolean("can_edit") : false;
-
-			list.add(new Document(subject, id, content, author, canEdit, group));
-		}
-
-		return list;
-	}
+	// ------------------------
+	// Other
+	// ------------------------
 
 	public static List<Comment> getComments(Object obj) {
 		String url = "";
@@ -128,22 +145,18 @@ public class FacebookAPI {
 		JSONObject response = FacebookAPI.getServerResponse(base_url + url);
 
 		if (response.has("comments")) {
-			JSONObject comment_section = (JSONObject)response.get("comments");
-			JSONArray commentsJson = (JSONArray)comment_section.get("data");
+			JSONObject comment_section = response.getJSONObject("comments");
+			JSONArray comments_json = comment_section.getJSONArray("data");
 
-			for (int i = 0; i < commentsJson.length(); i++) {
-				JSONObject comment = (JSONObject) commentsJson.get(i);
+			for (int i = 0; i < comments_json.length(); i++) {
+				JSONObject comment = (JSONObject) comments_json.get(i);
+
 				String id = comment.getString("id"); 
-
-				JSONObject fromJson = (JSONObject)comment.get("from");
-				String fromId = fromJson.getString("id");
-				String fromName = fromJson.getString("name");
-				Profile owner = new Profile(fromName, fromId);
-
+				Profile author = getAuthor(comment.getJSONObject("from"));
 				String message = comment.getString("message"); 
 				int likes = comment.getInt("like_count");
 
-				comments.add(new Comment(id, owner, obj, message, likes));
+				comments.add(new Comment(id, obj, message, author, likes));
 			}
 		}
 
@@ -151,35 +164,7 @@ public class FacebookAPI {
 	}
 
 	public static Feed getFeed(Profile profile) {
-		JSONObject response = getServerResponse(profile.getFullId() + "/home");	
-		Feed feed = new Feed(profile);
-
-		JSONArray feedJson =  response.getJSONArray("data");
-		for (int i = 0; i < feedJson.length(); i++) {
-			JSONObject feedItem = (JSONObject)feedJson.get(i);
-			Object obj = null;
-
-			JSONObject fromJson = feedItem.getJSONObject("from");
-			Profile from = new Profile(fromJson.getString("name"), fromJson.getString("id"));
-			String message = feedItem.has("message") ? feedItem.getString("message") : "";
-			String id = feedItem.getString("id");
-
-			switch(feedItem.getString("type")) {
-				case "status": 
-					obj = new Status(id, from, message, feed);
-					break;
-				case "link":
-					String link = feedItem.getString("link");
-					obj = new Link(id, from, link, message, feed);
-					break;
-				case "post":
-					obj = new Post(id, message, from, feed);
-					break;
-			}
-			feed.addFeedItem(obj);
-		}
-
-		return feed;
+		return new Feed(profile);
 	}
 
 	public static boolean likeEntity(Object obj) {
@@ -261,6 +246,19 @@ public class FacebookAPI {
 	}
 
 	public static Object getObjectById(String id) {
+		JSONObject response = getServerResponse(base_url + id);
+
+		if (response.has("data")) {
+			JSONArray data = response.getJSONArray("data");
+			
+		} else {
+			if (response.has("")) {
+
+			} else if (response.has("")) {
+					
+			}
+		}
+
 		return null;
 	}
 

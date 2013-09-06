@@ -1,3 +1,5 @@
+package com.jseb.fbapi;
+
 public class FacebookException extends Exception {
 	public FacebookException() { 
 		super(); 

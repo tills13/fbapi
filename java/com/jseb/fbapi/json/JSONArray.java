@@ -1,3 +1,5 @@
+package com.jseb.fbapi.json;
+
 /*
  Copyright (c) 2002 JSON.org
 

@@ -1,4 +1,8 @@
-public class Location {
+package com.jseb.fbapi;
+
+import com.jseb.fbapi.base.*;
+
+public class Location implements Idable {
 	public String id;
 	public Object parent;
 	public String latitude; 

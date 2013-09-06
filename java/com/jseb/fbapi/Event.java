@@ -1,6 +1,11 @@
+package com.jseb.fbapi;
+
 import java.util.*;
 
-public class Event { 
+import com.jseb.fbapi.json.*;
+import com.jseb.fbapi.base.*;
+
+public class Event implements Idable { 
 	public String id;
 	public Object parent;
 	public String name;
