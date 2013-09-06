@@ -22,8 +22,20 @@ public class Link implements Idable,Commentable,Likeable {
 		this.comments = FacebookAPI.getComments(this);
 	}
 
+	public void comment(String message) {
+		
+	}
+
 	public List<Comment> getComments() {
 		return this.comments == null ? FacebookAPI.getComments(this) : this.comments;
+	}
+
+	public void like() {
+		FacebookAPI.like(this);
+	}
+
+	public void unlike() {
+		FacebookAPI.unlike(this);
 	}
 
 	public int getNumLikes() {

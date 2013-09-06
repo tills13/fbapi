@@ -50,7 +50,7 @@ public class Profile implements Idable {
 	}
 
 	public String getFullId() {
-		return FacebookAPI.base_url + this.id;
+		return this.id;
 	}
 
 	public Idable getParent() {

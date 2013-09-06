@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.jseb.fbapi.base.*;
 
-public class Group implements Idable {
+public class Group implements Idable,Postable {
 	public String id;
 	public Idable parent;
 	public String name;
@@ -30,8 +30,12 @@ public class Group implements Idable {
 		this.owner = owner;
 	}
 
-	public String getId() {
-		return this.id;
+	public void post(String message) {
+
+	}
+
+	public void post(String message, String link) {
+		
 	}
 
 	public List<Post> getPosts() {

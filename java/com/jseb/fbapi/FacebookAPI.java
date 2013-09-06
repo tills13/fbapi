@@ -18,6 +18,7 @@ public class FacebookAPI {
 	public static String comments_url = "/comments";
 	public static String likes_url = "/likes";
 	public static String events_url = "/events";
+	public static String home_url = "/home";
 
 
 	public FacebookAPI(String access_token) {
@@ -30,7 +31,7 @@ public class FacebookAPI {
 
 	public static List<Post> getGroupPosts(Group group) {
 		List<Post> posts = new ArrayList<Post>();
-		JSONArray posts_json = (JSONArray) getServerResponse(base_url + group.getId() + feed_url).get("data");
+		JSONArray posts_json = (JSONArray) getServerResponse(group.getFullId() + feed_url).get("data");
 
 		for (int i = 0; i < posts_json.length(); i++) {
 			JSONObject post = (JSONObject) posts_json.get(i);
@@ -52,7 +53,7 @@ public class FacebookAPI {
 
 	public static List<Profile> getGroupMembers(Group group) {
 		List<Profile> members = new ArrayList<Profile>();
-		JSONArray members_json = (JSONArray) getServerResponse(base_url + group.getId() + members_url).get("data");
+		JSONArray members_json = getServerResponse(group.getFullId() + members_url).getJSONArray("data");
 
 		for (int i = 0; i < members_json.length(); i++) {
 			JSONObject member = (JSONObject) members_json.get(i);
@@ -69,7 +70,7 @@ public class FacebookAPI {
 
 	public static List<Event> getGroupEvents(Group group) {
 		List<Event> events = new ArrayList<Event>();
-		JSONArray events_json = (JSONArray) getServerResponse(base_url + group.getId() + events_url).get("data");
+		JSONArray events_json = getServerResponse(group.getFullId() + events_url).getJSONArray("data");
 
 		for (int i = 0; i < events_json.length(); i++) {
 			JSONObject event = (JSONObject) events_json.get(i);
@@ -93,7 +94,7 @@ public class FacebookAPI {
 
 	public static List<Document> getGroupDocs(Group group) {
 		List<Document> docs = new ArrayList<Document>();
-		JSONArray docs_json = (JSONArray) getServerResponse(base_url + group.getId() + docs_url).get("data");
+		JSONArray docs_json = getServerResponse(group.getFullId() + docs_url).getJSONArray("data");
 
 		for (int i = 0; i < docs_json.length(); i++) {
 			JSONObject doc = (JSONObject) docs_json.get(i);
@@ -115,7 +116,7 @@ public class FacebookAPI {
 	// ------------------------
 
 	public static Profile getProfile(String profileid) {
-		JSONObject response = getServerResponse(base_url + profileid);
+		JSONObject response = getServerResponse(profileid);
 
 		String id = response.getString("id");
 		String first_name = response.getString("first_name");
@@ -126,8 +127,8 @@ public class FacebookAPI {
 		return new Profile(id, first_name, last_name, gender, username);
 	}
 
-	public static Profile getAuthor(JSONObject profilejson) {
-		return new Profile(profilejson.getString("name"), profilejson.getString("id"));
+	public static Profile getAuthor(JSONObject profile_json) {
+		return new Profile(profile_json.getString("name"), profile_json.getString("id"));
 	}
 
 	// ------------------------
@@ -138,11 +139,10 @@ public class FacebookAPI {
 		String url = obj.getFullId();
 
 		List<Comment> comments = new ArrayList<Comment>();
-		JSONObject response = FacebookAPI.getServerResponse(base_url + url);
+		JSONObject response = getServerResponse(url);
 
 		if (response.has("comments")) {
-			JSONObject comment_section = response.getJSONObject("comments");
-			JSONArray comments_json = comment_section.getJSONArray("data");
+			JSONArray comments_json = response.getJSONObject("comments").getJSONArray("data");
 
 			for (int i = 0; i < comments_json.length(); i++) {
 				JSONObject comment = (JSONObject) comments_json.get(i);
@@ -152,93 +152,19 @@ public class FacebookAPI {
 				String message = comment.getString("message"); 
 				int likes = comment.getInt("like_count");
 
-				comments.add(new Comment(id, obj, message, author));
+				comments.add(new Comment(id, message, author, obj));
 			}
 		}
 
 		return comments;
 	}
 
-	public static List<Profile> getLikes(Likeable obj) {
-		return null;
-	}
-
 	public static Feed getFeed(Profile profile) {
 		return new Feed(profile);
 	}
 
-	public static boolean like(Idable obj) {
-		String url = "", response = "";
-		if (obj instanceof Post) url = ((Post)obj).getFullId();
-		else if (obj instanceof Status) url = ((Status)obj).getFullId();
-		else if (obj instanceof Document) url = ((Document)obj).getFullId();
-		else if (obj instanceof Link) url = ((Link)obj).getFullId();
-
-		try {
-			URL urlCon = new URL(base_url + url + likes_url + "?access_token=" + access_token);
-			HttpURLConnection con = (HttpURLConnection) urlCon.openConnection();
-			con.setDoOutput(true); 
-			con.setInstanceFollowRedirects(false); 
-			con.setRequestMethod("POST");
-
-			response = con.getResponseMessage();
-
-			con.disconnect();
-		} catch (MalformedURLException e) {
-			System.out.println("url: " + e.getMessage());
-		} catch (IOException e) {
-			System.out.println("io: " + e.getMessage());
-		}
-
-		return response.equals("OK");
-	}
-
-	public static boolean unlike(Idable obj) {
-		String url = obj.getFullId(), response = "";
-
-		try {
-			URL urlCon = new URL(base_url + url + likes_url + "?access_token=" + access_token);
-			HttpURLConnection con = (HttpURLConnection) urlCon.openConnection();
-			con.setDoOutput(true); 
-			con.setInstanceFollowRedirects(false); 
-			con.setRequestMethod("DELETE");
-
-			response = con.getResponseMessage();
-
-			con.disconnect();
-		} catch (MalformedURLException e) {
-			System.out.println("url: " + e.getMessage());
-		} catch (IOException e) {
-			System.out.println("io: " + e.getMessage());
-		}
-
-		return response.equals("OK");
-	}
-
-	public static boolean deleteEntity(Idable obj) {
-		String url = obj.getFullId(), response = "";
-
-		try {
-			URL urlCon = new URL(base_url + url + "?access_token=" + access_token);
-			HttpURLConnection con = (HttpURLConnection) urlCon.openConnection();
-			con.setDoOutput(true); 
-			con.setInstanceFollowRedirects(false); 
-			con.setRequestMethod("DELETE");
-
-			response = con.getResponseMessage();
-
-			con.disconnect();
-		} catch (MalformedURLException e) {
-			System.out.println("url: " + e.getMessage());
-		} catch (IOException e) {
-			System.out.println("io: " + e.getMessage());
-		}
-
-		return response.equals("OK");
-	}
-
 	public static Object getObjectById(String id) {
-		JSONObject response = getServerResponse(base_url + id);
+		JSONObject response = getServerResponse(id);
 
 		if (response.has("data")) {
 			JSONArray data = response.getJSONArray("data");
@@ -253,6 +179,37 @@ public class FacebookAPI {
 
 		return null;
 	}
+
+	// ------------------------
+	// Likes
+	// ------------------------
+
+	public static List<Profile> getLikes(Likeable obj) {
+		JSONArray likes_json = getServerResponse(obj.getFullId() + likes_url).getJSONArray("data");
+		List<Profile> likes = new ArrayList<Profile>();
+
+		for (int i = 0; i < likes_json.length(); i++) {
+			likes.add(getAuthor((JSONObject) likes_json.get(i)));
+		}
+
+		return likes;
+	}
+
+	public static boolean like(Likeable obj) {
+		return sendSimpleRequest(obj.getFullId() + likes_url, "POST");
+	}
+
+	public static boolean unlike(Likeable obj) {
+		return sendSimpleRequest(obj.getFullId() + likes_url, "DELETE");
+	}
+
+	public static boolean deleteEntity(Idable obj) {
+		return sendSimpleRequest(obj.getFullId(), "DELETE");
+	}
+
+	// ------------------------
+	// Posting
+	// ------------------------
 
 	/*public static boolean post(Object target, String message) {
 		try {
@@ -301,9 +258,13 @@ public class FacebookAPI {
 		return response.equals("OK");
 	}*/
 
+	// ------------------------
+	// Groups
+	// ------------------------
+
 	public static JSONObject getServerResponse(String full_url) {
 		try {
-			URL url = new URL(full_url + "?access_token=" + access_token);
+			URL url = new URL(base_url + full_url + "?access_token=" + access_token);
 			HttpURLConnection connection = (HttpURLConnection)url.openConnection();
 
 			Scanner in = new Scanner(connection.getInputStream());
@@ -318,5 +279,26 @@ public class FacebookAPI {
 		}
 
 		return null;
+	}
+
+	public static boolean sendSimpleRequest(String url, String method) {
+		String response = "";
+		try {
+			URL urlCon = new URL(base_url + url + "?access_token=" + access_token);
+			HttpURLConnection con = (HttpURLConnection) urlCon.openConnection();
+			con.setDoOutput(true); 
+			con.setInstanceFollowRedirects(false); 
+			con.setRequestMethod(method.toUpperCase());
+
+			response = con.getResponseMessage();
+
+			con.disconnect();
+		} catch (MalformedURLException e) {
+			System.out.println("url: " + e.getMessage());
+		} catch (IOException e) {
+			System.out.println("io: " + e.getMessage());
+		}
+
+		return response.equals("OK");
 	}
 }

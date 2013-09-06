@@ -6,12 +6,12 @@ import com.jseb.fbapi.base.*;
 
 public class Comment implements Idable,Likeable { 
 	public String id;
-	public Idable parent;
+	public Commentable parent;
 	public Profile author;
 	public String message;	
 	public List<Profile> likes;
 
-	public Comment(String id, String message, Profile author, Idable parent) {
+	public Comment(String id, String message, Profile author, Commentable parent) {
 		this.id = id;
 		this.parent = parent;
 		this.author = author;
@@ -20,11 +20,11 @@ public class Comment implements Idable,Likeable {
 		this.likes = FacebookAPI.getLikes(this);
 	}
 
-	public void incrementLikes() {
+	public void like() {
 		FacebookAPI.like(this);
 	}
 
-	public void decrementLikes() {
+	public void unlike() {
 		FacebookAPI.unlike(this);
 	}
 
@@ -44,7 +44,7 @@ public class Comment implements Idable,Likeable {
 		return this.parent.getFullId() + "_" + this.id;
 	}
 
-	public Idable getParent() {
+	public Commentable getParent() {
 		return this.parent;
 	}
 

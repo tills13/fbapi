@@ -5,7 +5,7 @@ import java.util.*;
 import com.jseb.fbapi.json.*;
 import com.jseb.fbapi.base.*;
 
-public class Event implements Idable { 
+public class Event implements Idable, Postable { 
 	public String id;
 	public Idable parent;
 	public String name;
@@ -21,6 +21,14 @@ public class Event implements Idable {
 		this.parent = parent;
 		this.name = name;
 		this.location = location;
+	}
+
+	public void post(String message) {
+
+	}
+
+	public void post(String message, String link) {
+		
 	}
 
 	public void setTimezone(String time_zone) {
@@ -70,7 +78,7 @@ public class Event implements Idable {
 	}
 
 	public String getFullId() {
-		return FacebookAPI.base_url + this.id; 
+		return this.id; 
 	}
 
 	public Idable getParent() {

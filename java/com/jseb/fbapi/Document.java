@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.jseb.fbapi.base.*;
 
-public class Document implements Idable,Likeable {
+public class Document implements Idable,Likeable,Commentable {
 	private String id;
 	private Idable parent;
 	private String subject; 
@@ -12,6 +12,7 @@ public class Document implements Idable,Likeable {
 	private Profile author;
 	private boolean canEdit;
 	private List<Profile> likes;
+	private List<Comment> comments;
 
 	public Document(String subject, String id, String content, boolean canEdit, Profile author, Idable parent) {
 		this.id = id;
@@ -31,6 +32,22 @@ public class Document implements Idable,Likeable {
 
 	public Profile getAuthor() {
 		return this.author;
+	}
+
+	public void like() {
+		FacebookAPI.like(this);
+	}
+
+	public void unlike() {
+		FacebookAPI.unlike(this);
+	}
+
+	public void comment(String comment) {
+		
+	}
+
+	public List<Comment> getComments() {
+		return (this.comments == null) ? FacebookAPI.getComments(this) : this.comments;
 	}
 
 	public int getNumLikes() {
