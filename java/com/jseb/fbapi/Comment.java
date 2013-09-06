@@ -1,40 +1,51 @@
 package com.jseb.fbapi;
 
+import java.util.List;
+
 import com.jseb.fbapi.base.*;
 
-public class Comment implements Idable { 
+public class Comment implements Idable,Likeable { 
 	public String id;
-	public Object parent;
+	public Idable parent;
 	public Profile author;
 	public String message;	
-	public int likes;
+	public List<Profile> likes;
 
-	public Comment(String id, Object parent, String message, Profile author, int likes) {
+	public Comment(String id, String message, Profile author, Idable parent) {
 		this.id = id;
 		this.parent = parent;
 		this.author = author;
 		this.parent = parent;
 		this.message = message;
-		this.likes = likes;
+		this.likes = FacebookAPI.getLikes(this);
 	}
 
 	public void incrementLikes() {
-		this.likes++;
+		FacebookAPI.like(this);
 	}
 
 	public void decrementLikes() {
-		this.likes = (this.likes == 0) ? 0 : this.likes--;
+		FacebookAPI.unlike(this);
 	}
 
 	public void editMessage(String newMessage) {
 		this.message = newMessage;
 	}
 
+	public int getNumLikes() {
+		return this.likes.size();
+	}
+
+	public List<Profile> getLikes() {
+		return (this.likes == null) ? FacebookAPI.getLikes(this) : this.likes;
+	}
+
 	public String getFullId() {
-		if (this.parent instanceof Post) return ((Post)this.parent).getFullId() + "_" + this.id;
-		else if (this.parent instanceof Link) return ((Link)this.parent).getFullId() + "_" + this.id;
-		else if (this.parent instanceof Status) return ((Status)this.parent).getFullId() + "_" + this.id;
-		return this.id;
+		return this.parent.getFullId() + "_" + this.id;
+	}
+
+	public Idable getParent() {
+		return this.parent;
 	}
 
 	public String toString() {

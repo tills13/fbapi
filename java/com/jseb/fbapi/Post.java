@@ -6,20 +6,20 @@ import java.util.List;
 
 import com.jseb.fbapi.base.*;
 
-public class Post implements Idable,Commentable {
+public class Post implements Idable,Commentable,Likeable {
 	private String id;
-	private Object parent;
+	private Idable parent;
 	private Profile author; 
 	private String message; 
 	private List<Comment> comments;
+	private List<Profile> likes;
 	private String createdTime;
-	private int likes;
 
 	public Post(String id) {
 		this.id = id;
 	}
 
-	public Post(String id, String message, Profile author, Object parent) {
+	public Post(String id, String message, Profile author, Idable parent) {
 		this.id = id;
 		this.parent = parent;
 		this.message = message;
@@ -35,18 +35,20 @@ public class Post implements Idable,Commentable {
 		return this.comments == null ? this.comments = FacebookAPI.getComments(this) : this.comments;
 	}
 
-	public List<Profile> getLikes() {
-		return new ArrayList<Profile>();
+	public int getNumLikes() {
+		return this.likes.size();
 	}
 
-	public Object getParent() {
-		return this.parent;
+	public List<Profile> getLikes() {
+		return (this.likes == null) ? FacebookAPI.getLikes(this) : this.likes;
 	}
 
 	public String getFullId() {
-		if (this.parent instanceof Post) return ((Post)this.parent).getFullId() + "_" + this.id;
-		else if (this.parent instanceof Link) return ((Group)this.parent).getFullId() + "_" + this.id;
-		return this.id;
+		return this.parent.getFullId() + "_" + this.id;
+	}
+
+	public Idable getParent() {
+		return this.parent;
 	}
 
 	public String toString() {

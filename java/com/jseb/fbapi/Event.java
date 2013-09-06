@@ -7,7 +7,7 @@ import com.jseb.fbapi.base.*;
 
 public class Event implements Idable { 
 	public String id;
-	public Object parent;
+	public Idable parent;
 	public String name;
 	public String time_zone;
 	public String start_time;
@@ -16,7 +16,7 @@ public class Event implements Idable {
 	public List<Profile> invited;
 	public List<Profile> attending;
 
-	public Event(String id, String name, String location, Object parent) {
+	public Event(String id, String name, String location, Idable parent) {
 		this.id = id;
 		this.parent = parent;
 		this.name = name;
@@ -71,5 +71,9 @@ public class Event implements Idable {
 
 	public String getFullId() {
 		return FacebookAPI.base_url + this.id; 
+	}
+
+	public Idable getParent() {
+		return this.parent;
 	}
 }

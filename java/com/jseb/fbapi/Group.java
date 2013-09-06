@@ -6,7 +6,7 @@ import com.jseb.fbapi.base.*;
 
 public class Group implements Idable {
 	public String id;
-	public Object parent;
+	public Idable parent;
 	public String name;
 	public String description;
 	public String link;
@@ -20,12 +20,12 @@ public class Group implements Idable {
 		this.id = id;
 	}
 
-	public Group(String id, String name, String description, String privacy, String email, Profile owner, Object parent) {
+	public Group(String id, String name, String description, String privacy, String email, Profile owner, Idable parent) {
 		this.id = id;
-		this.parent = 
+		this.parent = parent;
 		this.name = name;
 		this.description = description;
-		this. privacy = privacy;
+		this.privacy = privacy;
 		this.email = email;
 		this.owner = owner;
 	}
@@ -42,12 +42,16 @@ public class Group implements Idable {
 		return FacebookAPI.getGroupMembers(this);
 	}
 
+	public String getDescription() {
+		return this.description;
+	}
+
 	public String getFullId() {
 		return this.id;
 	}
 
-	public String getDescription() {
-		return this.description;
+	public Idable getParent() {
+		return this.parent;
 	}
 
 	public String toString() {

@@ -134,12 +134,8 @@ public class FacebookAPI {
 	// Other
 	// ------------------------
 
-	public static List<Comment> getComments(Object obj) {
-		String url = "";
-		if (obj instanceof Post) url = ((Post)obj).getFullId();
-		else if (obj instanceof Status) url = ((Status)obj).getFullId();
-		else if (obj instanceof Document) url = ((Document)obj).getFullId();
-		else if (obj instanceof Link) url = ((Link)obj).getFullId();
+	public static List<Comment> getComments(Commentable obj) {
+		String url = obj.getFullId();
 
 		List<Comment> comments = new ArrayList<Comment>();
 		JSONObject response = FacebookAPI.getServerResponse(base_url + url);
@@ -156,18 +152,22 @@ public class FacebookAPI {
 				String message = comment.getString("message"); 
 				int likes = comment.getInt("like_count");
 
-				comments.add(new Comment(id, obj, message, author, likes));
+				comments.add(new Comment(id, obj, message, author));
 			}
 		}
 
 		return comments;
 	}
 
+	public static List<Profile> getLikes(Likeable obj) {
+		return null;
+	}
+
 	public static Feed getFeed(Profile profile) {
 		return new Feed(profile);
 	}
 
-	public static boolean likeEntity(Object obj) {
+	public static boolean like(Idable obj) {
 		String url = "", response = "";
 		if (obj instanceof Post) url = ((Post)obj).getFullId();
 		else if (obj instanceof Status) url = ((Status)obj).getFullId();
@@ -193,12 +193,8 @@ public class FacebookAPI {
 		return response.equals("OK");
 	}
 
-	public static boolean unlikeEntity(Object obj) {
-		String url = "", response = "";
-		if (obj instanceof Post) url = ((Post)obj).getFullId();
-		else if (obj instanceof Status) url = ((Status)obj).getFullId();
-		else if (obj instanceof Document) url = ((Document)obj).getFullId();
-		else if (obj instanceof Link) url = ((Link)obj).getFullId();
+	public static boolean unlike(Idable obj) {
+		String url = obj.getFullId(), response = "";
 
 		try {
 			URL urlCon = new URL(base_url + url + likes_url + "?access_token=" + access_token);
@@ -219,12 +215,8 @@ public class FacebookAPI {
 		return response.equals("OK");
 	}
 
-	public static boolean deleteEntity(Object obj) {
-		String url = "", response = "";
-		if (obj instanceof Post) url = ((Post)obj).getFullId();
-		else if (obj instanceof Status) url = ((Status)obj).getFullId();
-		else if (obj instanceof Document) url = ((Document)obj).getFullId();
-		else if (obj instanceof Link) url = ((Link)obj).getFullId();
+	public static boolean deleteEntity(Idable obj) {
+		String url = obj.getFullId(), response = "";
 
 		try {
 			URL urlCon = new URL(base_url + url + "?access_token=" + access_token);

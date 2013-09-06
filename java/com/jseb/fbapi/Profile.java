@@ -45,12 +45,16 @@ public class Profile implements Idable {
 		return this.first_name == null ? this.name : this.first_name + " " + this.last_name;
 	}
 
+	public String getProfileLink() {
+		return "";
+	}
+
 	public String getFullId() {
 		return FacebookAPI.base_url + this.id;
 	}
 
-	public String getProfile() {
-		return "";
+	public Idable getParent() {
+		return this;
 	}
 
 	public String toString() {
