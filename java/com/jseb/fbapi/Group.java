@@ -31,11 +31,14 @@ public class Group implements Idable,Postable {
 	}
 
 	public void post(String message) {
-		FacebookAPI.post(message, "");
+		FacebookAPI.post(this, message, "");
 	}
 
 	public void post(String message, String link) {
-		FacebookAPI.post(message, link);
+		FacebookAPI.post(this, message, link
+
+
+			);
 	}
 
 	public List<Post> getPosts() {

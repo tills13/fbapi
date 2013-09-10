@@ -231,14 +231,14 @@ public class FacebookAPI {
 			System.out.println("io: " + e.getMessage());
 		}
 
-		return reponse.equals("OK");
+		return response.equals("OK");
 	}
 
 	public static boolean postComment(Commentable target, String comment) {
 		String response = "";
 
 		try { 
-			HttpURLConnection con = (HttpURLConnection) new URL(base_url + post.getFullURL() + "/comments" + "?access_token=" + access_token).openConnection();
+			HttpURLConnection con = (HttpURLConnection) new URL(base_url + target.getFullId() + "/comments" + "?access_token=" + access_token).openConnection();
 			con.setRequestMethod("POST");
 			con.setDoOutput(true); 
 			con.setInstanceFollowRedirects(false); 

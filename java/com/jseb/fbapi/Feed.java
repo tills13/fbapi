@@ -31,7 +31,7 @@ public class Feed implements Idable {
 		else throw new FacebookException("feed item not instance of Link");
 	}
 
-	public Idable getFeedItem(int index) {
+	public Idable get(int index) {
 		return feed_items.get(index);
 	} 
 
@@ -47,8 +47,10 @@ public class Feed implements Idable {
 			JSONObject feed_item_json = (JSONObject)feed_json.get(i);
 			
 			Profile author = FacebookAPI.getAuthor(feed_item_json.getJSONObject("from"));
+			Profile to = feed_item_json.has("to") ? FacebookAPI.getAuthor(feed_item_json.getJSONObject("to")) : null;
 			String message = feed_item_json.has("message") ? feed_item_json.getString("message") : "";
 			String id = feed_item_json.getString("id");
+			if (to == null) id = id.substring(id.indexOf("_") + 1, id.length());
 
 			switch(feed_item_json.getString("type")) {
 				case "status": 

@@ -13,6 +13,7 @@ public class Profile implements Idable {
 	public String username;
 
 	public Profile(String name, String id) {
+		this.id = id;
 		this.parent = this;
 		this.name = name;
 		//this.first_name = name.substring(0, name.indexOf(" "));
@@ -21,6 +22,7 @@ public class Profile implements Idable {
 	}
 
 	public Profile(String id, String first_name, String last_name, String gender, String username) {
+		this.id = id;
 		this.parent = this;
 		this.first_name = first_name;
 		this.last_name = last_name;

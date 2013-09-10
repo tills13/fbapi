@@ -31,8 +31,20 @@ public class Post implements Idable,Commentable,Likeable {
 		return "idiot";
 	}
 
+	public void comment(String comment) {
+		FacebookAPI.postComment(this, comment);
+	}
+
 	public List<Comment> getComments() {
 		return this.comments == null ? this.comments = FacebookAPI.getComments(this) : this.comments;
+	}
+
+	public void like() {
+		FacebookAPI.like(this);
+	}
+
+	public void unlike() {
+		FacebookAPI.unlike(this);
 	}
 
 	public int getNumLikes() {
@@ -44,7 +56,7 @@ public class Post implements Idable,Commentable,Likeable {
 	}
 
 	public String getFullId() {
-		return this.parent.getFullId() + "_" + this.id;
+		return this.id;
 	}
 
 	public Idable getParent() {

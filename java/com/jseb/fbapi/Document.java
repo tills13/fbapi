@@ -59,7 +59,7 @@ public class Document implements Idable,Likeable,Commentable {
 	}
 
 	public String getFullId() {
-		return FacebookAPI.base_url + id;
+		return id;
 	}
 
 	public Idable getParent() {

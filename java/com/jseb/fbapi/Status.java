@@ -47,7 +47,7 @@ public class Status implements Idable,Commentable,Likeable {
 	}
 
 	public String getFullId() {
-		return this.parent.getFullId() + "_" + this.id;
+		return this.id;
 	}
 
 	public Idable getParent() {
